@@ -1,33 +1,20 @@
 {
   "manifest_version": 2,
-  "name": "Instant Price per sqm",
+  "name": "Property Price Per Sqm",
   "version": "1.0",
-  "description": "Chrome extension for getting instant price per sqm on realestate.com.au properties",
+  "description": "Displays the price per sqm overlay on realestate.com.au property listings.",
   "permissions": [
-    "activeTab"
+    "activeTab",
+    "scripting"
   ],
   "content_scripts": [
     {
       "matches": [
-        "https://www.realestate.com.au/*"
+        "https://www.realestate.com.au/buy/*",
+        "https://www.realestate.com.au/property-*"
       ],
-      "js": [
-        "contentScript.js"
-      ]
+      "js": ["contentScript.js"],
+      "run_at": "document_idle"
     }
-  ],
-  "icons": {
-    "16": "icon16.png",
-    "48": "icon48.png",
-    "128": "icon128.png"
-  },
-  "browser_action": {
-    "default_icon": {
-      "16": "icon16.png",
-      "48": "icon48.png",
-      "128": "icon128.png"
-    },
-    "default_title": "Instant Price per sqm"
-  },
-  "manifest_key": "value"
+  ]
 }
