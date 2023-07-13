@@ -1,50 +1,47 @@
-// contentScript.js
-function calculatePricePerSqm() {
-  const priceElement = document.querySelector(".property-price");
-  const areaElement = document.querySelector('.property-size-group');
+function calculatePricePerSqm(propertyElement) {
+  const priceElement = propertyElement.querySelector('.property-price');
+  const areaElement = propertyElement.querySelector('.View__PropertySize-sc-1psmy31-0');
 
   if (!priceElement || !areaElement) {
     return null;
   }
 
-  const price = parseFloat(priceElement.textContent.replace(/[^0-9.]/g, ""));
-  const areaMatch = areaElement.textContent.match(/(\d+(\.\d+)?)\s*(m²|ha)/i);
-  const areaValue = areaMatch ? parseFloat(areaMatch[1]) : null;
-  const areaUnit = areaMatch ? areaMatch[3].toLowerCase() : null;
+  const price = parseFloat(priceElement.textContent.replace(/[^0-9.]/g, ''));
+  const areaMatch = areaElement.textContent.match(/([\d,.]+)\s*m²/i);
+  const areaValue = areaMatch ? parseFloat(areaMatch[1].replace(/,/g, '')) : null;
 
-  if (isNaN(price) || !areaValue || !areaUnit) {
+  if (isNaN(price) || !areaValue) {
     return null;
   }
 
-  let area;
-  if (areaUnit === 'ha') {
-    area = areaValue * 10000; // Convert hectares to square meters
-  } else {
-    area = areaValue;
-  }
-
-  const pricePerSqm = (price / area).toFixed(2);
-
+  const pricePerSqm = (price / areaValue).toFixed(2);
   return pricePerSqm;
 }
 
-function displayOverlay(pricePerSqm) {
+function displayOverlay(propertyElement, pricePerSqm) {
   const overlay = document.createElement("div");
-  overlay.style.position = "fixed";
-  overlay.style.top = "10px";
-  overlay.style.right = "10px";
-  overlay.style.background = "rgba(0, 0, 0, 0.8)";
-  overlay.style.color = "#fff";
+  overlay.style.position = "relative";
+  overlay.style.marginTop = "10px";
+  overlay.style.backgroundColor = "#fff";
   overlay.style.padding = "5px 10px";
   overlay.style.fontWeight = "bold";
-  overlay.style.zIndex = "9999";
-  overlay.textContent = `Price per sqm: $${pricePerSqm}`;
+  overlay.style.fontSize = "14px";
+  overlay.style.fontFamily = "Arial, sans-serif";
+  overlay.textContent = `Price per m²: $${pricePerSqm}`;
 
-  document.body.appendChild(overlay);
+  const propertyTypeElement = propertyElement.querySelector('.property-info__property-type');
+  propertyTypeElement.parentNode.insertBefore(overlay, propertyTypeElement.nextSibling);
 }
 
-const pricePerSqm = calculatePricePerSqm();
+function processProperties() {
+  const propertyElements = document.querySelectorAll('.results-card.residential-card, .property-info');
 
-if (pricePerSqm) {
-  displayOverlay(pricePerSqm);
+  propertyElements.forEach((propertyElement) => {
+    const pricePerSqm = calculatePricePerSqm(propertyElement);
+    if (pricePerSqm) {
+      displayOverlay(propertyElement, pricePerSqm);
+    }
+  });
 }
+
+processProperties();
