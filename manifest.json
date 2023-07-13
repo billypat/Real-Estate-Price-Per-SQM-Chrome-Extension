@@ -1,20 +1,12 @@
 {
-  "manifest_version": 2,
-  "name": "Property Price Per Sqm",
+  "manifest_version": 3,
+  "name": "Price per sqm Overlay",
   "version": "1.0",
-  "description": "Displays the price per sqm overlay on realestate.com.au property listings.",
+  "description": "Displays the price per sqm overlay on real estate websites.",
   "permissions": [
-    "activeTab",
-    "scripting"
+    "activeTab"
   ],
-  "content_scripts": [
-    {
-      "matches": [
-        "https://www.realestate.com.au/buy/*",
-        "https://www.realestate.com.au/property-*"
-      ],
-      "js": ["contentScript.js"],
-      "run_at": "document_idle"
-    }
-  ]
+  "background": {
+    "service_worker": "background.js"
+  }
 }
